@@ -1,0 +1,98 @@
+<!doctype>
+<html>
+<head>
+	</head>
+<body>
+
+<div id="output"></div>
+
+<canvas id="can0"></canvas>
+<canvas id="can1"></canvas>
+<canvas id="can2"></canvas>
+
+<script>
+
+(function(){
+///
+
+var
+	output=$('#output')
+	, i
+	, cane
+	, can=[]
+	;
+
+for (i=0; i<10; i++) {
+	cane=document.createElement('canvas');
+	cane.id='can'+i;
+	can.push(cane); 
+	
+	output.appendChild(cane); 
+	output.appendChild(document.createTextNode(' '));
+	}
+
+canfil(0, 63, can[0]); 
+canfil(0, 127, can[1]); 
+canfil(63, 127, can[2]); 
+canfil(0, 191, can[3]); 
+canfil(63, 191, can[4]); 
+canfil(0, 255, can[5]); 
+canfil(63, 255, can[6]); 
+canfil(127, 191, can[7]); 
+canfil(127, 255, can[8]); 
+canfil(191, 255, can[9]); 
+
+function canfil(ac, bc, can) {
+	var 
+		ia, iad
+		, tx=can.getContext('2d')
+		, aav=ac*ac, bbv=bc*bc, cv0=Math.floor( Math.sqrt((aav+bbv)/2) ), cv1=cv0+1
+		, x, y, p, psum, dvv, cvv=cv1*cv1
+		;
+	
+	console.log(can); 
+	can.width='100';
+	can.height='100';
+	ia=tx.getImageData(0,0,100,100); 
+	iad=ia.data; // 100x100x4(rgba)
+	p=0; psum=0; 
+	for (y=0; y<100; y++) {
+		for (x=0; x<100; x++) {
+			if (x<50) {
+				}
+			else {
+				psum+=cv0*cv0; 
+				dvv=psum>=cvv?cv1:cv0; 
+				psum-=dvv*dvv; 
+				}
+			for (n=0; n<4; n++) {
+				if (n==3) {
+					iad[p]=100; // 0..100
+					}
+				else if (x<50) {
+					iad[p]=(y%2)?ac:bc;
+					}
+				else {
+					iad[p]=dvv; 
+					}
+				p++; 
+				} // n 
+			} // x
+		} // y
+	tx.putImageData(ia, 0, 0); 
+	}
+
+function $(v) {
+	let rv=document.querySelectorAll(v)
+		;
+	return rv?(rv.length>1)?rv:rv[0]:rv;
+	}
+
+///
+	}())
+	;
+
+	</script>
+
+	</body>
+	</html>
