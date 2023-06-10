@@ -1,8 +1,9 @@
-; ( function() { 
-/// 
+{ /// 
 
-var output = $( '#output' ) 
-var canvText = ` 
+const { $, $$, $c, $t } = _( document ) 
+
+const output = $ `#output` 
+const canvText = ` 
 	0 31 
 	0 63 
 	31 63 
@@ -38,75 +39,75 @@ var canvText = `
 	191 223 
 	159 255 
 	191 255 
-	` 
-var canv = canvText .match( /\d+/g ) .map( t => + t ) 
+	` // -- canvText 
+const canv = canvText .match( /\d+/g ) .map( t => + t ) 
 
-fillRGB( canv, output, 1, 0, 0 ) 
-output .appendChild( document .createElement( 'br' ) ) 
-fillRGB( canv, output, 0, 1, 0 ) 
-output .appendChild( document .createElement( 'br' ) ) 
-fillRGB( canv, output, 0, 0, 1) 
-output .appendChild( document .createElement( 'br' ) ) 
-fillRGB( canv, output, 1, 1, 1 ) 
+fillRGB( canv, output, [ 1, 0, 0 ] ) 
+output .appendChild( $c `br` ) 
+fillRGB( canv, output, [ 0, 1, 0 ] ) 
+output .appendChild( $c `br` ) 
+fillRGB( canv, output, [ 0, 0, 1 ] ) 
+output .appendChild( $c `br` ) 
+fillRGB( canv, output, [ 1, 1, 1 ] ) 
 
-function fillRGB(canv, output, r, g, b) { 
-	var i, cane 
-	
-	for ( i = 0; i < canv .length; i += 2 ) { 
-		cane = document .createElement( 'canvas' ) 
+// .. functions .. 
+
+function fillRGB( canv, output, [ r, g, b ] ) { 
+	for ( let i = 0; i < canv .length; i += 2 ) { 
+		const cane = $c `canvas` 
 		
-		output.appendChild(cane) 
-		canfil(canv[i], canv[i+1], cane, r, g, b) 
+		output .appendChild( cane ) 
+		canfil( canv[ i ], canv[ i + 1 ], cane, [ r, g, b ] ) 
 		
-		output.appendChild(document.createTextNode((canv[i]+canv[i+1])/2+' ')) 
-		} 
+		output .appendChild( $t `${ ( canv[ i ] + canv[ i + 1 ] ) / 2 } ` ) 
+		} // -- for < length 
 	} // -- fillRGB() 
 
-function canfil( ac, bc, can, r, g, b ) { 
-	var ia, iad 
-	var tx = can .getContext( '2d' ) 
-	var aav = ac * ac 
-	var bbv = bc * bc 
-	var cv0 = Math .floor( Math .sqrt( ( aav + bbv ) / 2 ) ) 
-	var cv1 = cv0 + 1 
-	var x, y, p, psum, dvv 
-	var cvv = cv1 * cv1 
+function canfil( ac, bc, can, [ r, g, b ] ) { 
+	const tx = can .getContext `2d` 
+	const aav = ac * ac 
+	const bbv = bc * bc 
+	const cv0 = Math .floor( Math .sqrt( ( aav + bbv ) / 2 ) ) 
+	const cv1 = cv0 + 1 
+	let dvv 
+	const cvv = cv1 * cv1 
 		
-	var w = 100 
-	var h = 100 
-	var hw = w / 2 
+	const w = 100 
+	const h = 100 
+	const hw = w / 2 
 	
 	can .width = w 
 	can .height = h 
-	ia = tx .getImageData( 0, 0, w, h ) 
-	iad = ia .data // 100x100x4(rgba) 
-	p = 0 
-	psum = 0 
-	for ( y = 0; y < h; y += 1 ) { 
-		for ( x = 0; x < w; x += 1 ) { 
+	const ia = tx .getImageData( 0, 0, w, h ) 
+	const iad = ia .data // 100x100x4(rgba) 
+	
+	let p = 0 
+	let psum = 0 
+	for ( let y = 0; y < h; y += 1 ) { 
+		for ( let x = 0; x < w; x += 1 ) { 
 			if ( x < hw ) { 
-				} 
+				} // if < hw 
 			else { 
 				psum += cv0 * cv0 
 				dvv = psum >= cvv ? cv1 : cv0 
 				psum -= dvv * dvv 
-				} 
-			for (n=0; n<3; n++) { 
-				if ( 
-						   ( r && ( n == 0 ) ) 
+				} // < hw else 
+			for ( let n = 0; n < 3; n += 1 ) { 
+				if 
+						(  ( r && ( n == 0 ) ) 
 						|| ( g && ( n == 1 ) ) 
 						|| ( b && ( n == 2 ) ) 
 						) { // rgb each 
 					if ( x < hw ) { 
 						iad[ p ] = ( y % 2 ) ? ac : bc 
-						} 
+						} // if x < hw 
 					else { 
 						iad[ p ] = dvv 
-						} 
-					} 
+						} // x < hw else 
+					} // -- if rgb n 012 
 				else { // no rgb 
 					iad[ p ] = 0 
-					} 
+					} // -- rgb n 012 else 
 				p += 1 
 				} // -- for n 
 			iad[ p ] = 255 // 0..100 
@@ -116,6 +117,18 @@ function canfil( ac, bc, can, r, g, b ) {
 	tx .putImageData( ia, 0, 0 ) 
 	} // -- canfil() 
 
-function $( q ) { return document .querySelector( q ) } 
+function _( ele ) { 
+	const $ = q => ele .querySelector( q ) 
+	const $$ = q => ele .querySelectorAll( q ) 
+	const $c = q => ele .createElement( q ) 
+	const $t = ( ... ar ) => ele .createTextNode( rawValue( ... ar ) ) 
+	
+	return { $, $$, $c, $t } 
+	} // -- _() 
 
-}()) /// 
+function rawValue( ... ar ) { 
+	const [ rawo ] = ar 
+	return rawo ?.raw ? String .raw( ... ar ) : rawo 
+	} // -- rawValue() 
+
+} /// 
